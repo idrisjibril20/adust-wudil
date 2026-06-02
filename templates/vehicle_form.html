@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Register Vehicle - ADUST Wudil{% endblock %}
+{% block page_title %}Register Vehicle{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Register a Vehicle</h1>
+    <p class="page-sub">Submit your vehicle details for admin approval</p>
+  </div>
+</div>
+<div class="form-card">
+  <form method="POST" class="form-grid">
+    <div class="field">
+      <label>Plate Number *</label>
+      <input type="text" name="plate_number" required placeholder="e.g. KN-234-ABC">
+    </div>
+    <div class="field">
+      <label>Make (Brand) *</label>
+      <input type="text" name="make" required placeholder="e.g. Toyota">
+    </div>
+    <div class="field">
+      <label>Model *</label>
+      <input type="text" name="model" required placeholder="e.g. Corolla">
+    </div>
+    <div class="field">
+      <label>Color *</label>
+      <input type="text" name="color" required placeholder="e.g. Silver">
+    </div>
+    <div class="field">
+      <label>Year</label>
+      <input type="number" name="year" placeholder="e.g. 2020" min="1990" max="2025">
+    </div>
+    <div class="field span-2" style="margin-top:8px">
+      <button type="submit" class="btn-primary">Submit for Approval</button>
+      <a href="{{ url_for('vehicles') }}" class="btn-outline" style="margin-left:12px;padding:10px 18px;border-radius:8px;border:1px solid #d0e4d8;color:#3a5244;font-size:13px">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

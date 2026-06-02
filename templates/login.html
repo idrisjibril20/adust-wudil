@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Login - Aliko Dangote University of Science and Technology Wudil{% endblock %}
+{% block auth_content %}
+<div class="auth-page">
+  <div class="auth-left">
+    <div class="auth-grid-bg"></div>
+    <div class="auth-brand">
+      <div class="logo-badge lg">AD</div>
+      <h1>ADUST<br><span>Wudil</span></h1>
+      <p>Aliko Dangote University of Science and Technology Wudil</p>
+      <div class="auth-features">
+        <div class="af-item"><span>&#128663;</span> Vehicle Registration and Permits</div>
+        <div class="af-item"><span>&#128737;</span> Gate Access Control</div>
+        <div class="af-item"><span>&#9989;</span> Task and Workflow Management</div>
+        <div class="af-item"><span>&#128202;</span> Real-time Reports</div>
+      </div>
+    </div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-card">
+      <h2>Welcome back</h2>
+      <p class="auth-sub">Sign in to your ADUST portal account</p>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      {% endwith %}
+      <form method="POST" class="auth-form">
+        <div class="field">
+          <label>Email address</label>
+          <input type="email" name="email" required placeholder="you@adust.edu.ng">
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" name="password" required placeholder="Your password">
+        </div>
+        <button type="submit" class="btn-primary full">Sign in</button>
+      </form>
+      <p class="auth-link">No account? <a href="{{ url_for('register') }}">Register here</a></p>
+      <div class="demo-creds">
+        <div class="demo-title">Demo credentials (click to fill)</div>
+        <div class="demo-grid">
+          <div onclick="fillCreds('admin@adust.edu.ng','admin123')"><strong>Admin</strong>admin@adust.edu.ng</div>
+          <div onclick="fillCreds('staff@adust.edu.ng','staff123')"><strong>Staff</strong>staff@adust.edu.ng</div>
+          <div onclick="fillCreds('student@adust.edu.ng','student123')"><strong>Student</strong>student@adust.edu.ng</div>
+          <div onclick="fillCreds('security@adust.edu.ng','security123')"><strong>Security</strong>security@adust.edu.ng</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function fillCreds(e,p){
+  document.querySelector('input[name=email]').value=e;
+  document.querySelector('input[name=password]').value=p;
+}
+</script>
+{% endblock %}

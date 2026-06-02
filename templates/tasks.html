@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Tasks - ADUST Wudil{% endblock %}
+{% block page_title %}Task Management{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Tasks</h1>
+    <p class="page-sub">Create, assign, and track administrative tasks</p>
+  </div>
+  <button class="btn btn-primary" onclick="document.getElementById('taskModal').style.display='flex'">+ New Task</button>
+</div>
+<div class="kanban">
+  {% set statuses = [('open','Open'),('in_progress','In Progress'),('closed','Closed')] %}
+  {% for skey, slabel in statuses %}
+  <div class="kanban-col">
+    <div class="kanban-header kanban-{{ skey }}">{{ slabel }}</div>
+    {% set ns = namespace(found=false) %}
+    {% for t in tasks if t.status == skey %}
+      {% set ns.found = true %}
+      <div class="kanban-card" onclick="location.href='{{ url_for('task_detail', tid=t.id) }}'">
+        <div class="kc-title">{{ t.title }}</div>
+        <div class="kc-meta">
+          <span class="badge badge-pri-{{ t.priority }}">{{ t.priority|capitalize }}</span>
+          {% if t.due_date %}<span class="kc-due">Due {{ t.due_date }}</span>{% endif %}
+        </div>
+        <div class="kc-footer">
+          <span class="kc-creator">by {{ t.creator }}</span>
+          {% if t.assignee %}<span class="kc-assignee"> to {{ t.assignee }}</span>{% endif %}
+        </div>
+      </div>
+    {% endfor %}
+    {% if not ns.found %}
+    <div class="kanban-empty">No {{ slabel|lower }} tasks</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+<div class="modal-overlay" id="taskModal" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Create New Task</h3>
+      <button onclick="document.getElementById('taskModal').style.display='none'">x</button>
+    </div>
+    <form method="POST" action="{{ url_for('create_task') }}" class="form-grid" style="padding:20px">
+      <div class="field span-2">
+        <label>Task Title *</label>
+        <input type="text" name="title" required placeholder="Brief task name">
+      </div>
+      <div class="field span-2">
+        <label>Description</label>
+        <textarea name="description" rows="3" placeholder="Detailed description..."></textarea>
+      </div>
+      <div class="field">
+        <label>Assign To</label>
+        <select name="assigned_to">
+          <option value="">Unassigned</option>
+          {% for s in staff %}
+          <option value="{{ s.id }}">{{ s.full_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label>Priority</label>
+        <select name="priority">
+          <option value="low">Low</option>
+          <option value="medium" selected>Medium</option>
+          <option value="high">High</option>
+          <option value="urgent">Urgent</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Due Date</label>
+        <input type="date" name="due_date">
+      </div>
+      <div class="field span-2">
+        <button type="submit" class="btn-primary">Create Task</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

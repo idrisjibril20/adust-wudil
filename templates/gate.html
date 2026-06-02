@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Gate Control - ADUST Wudil{% endblock %}
+{% block page_title %}Gate Control{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Gate Access Control</h1>
+  <p class="page-sub">Log vehicle entries and exits at campus gate</p>
+</div>
+<div class="dash-grid">
+  <div class="card">
+    <div class="card-header"><h3>Log Vehicle Entry / Exit</h3></div>
+    <form method="POST" action="{{ url_for('log_gate') }}" class="gate-form">
+      <div class="field">
+        <label>Select Approved Vehicle</label>
+        <select name="vehicle_id" required class="filter-select full-w">
+          <option value="">-- Choose vehicle --</option>
+          {% for v in vehicles %}
+          <option value="{{ v.id }}">{{ v.plate_number }} - {{ v.full_name }} ({{ v.make }} {{ v.model }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label>Direction</label>
+        <div class="dir-toggle">
+          <label class="dir-opt">
+            <input type="radio" name="direction" value="in" checked>
+            <span class="dir-btn in-btn">Entry</span>
+          </label>
+          <label class="dir-opt">
+            <input type="radio" name="direction" value="out">
+            <span class="dir-btn out-btn">Exit</span>
+          </label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Note (optional)</label>
+        <input type="text" name="note" placeholder="e.g. Routine check">
+      </div>
+      <button type="submit" class="btn-primary">Log Gate Event</button>
+    </form>
+  </div>
+  <div class="card">
+    <div class="card-header"><h3>Recent Gate Logs</h3></div>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Plate</th><th>Owner</th><th>Direction</th><th>Officer</th><th>Time</th></tr></thead>
+        <tbody>
+        {% for l in logs %}
+        <tr>
+          <td><strong>{{ l.plate_number }}</strong></td>
+          <td>{{ l.owner }}</td>
+          <td><span class="badge badge-dir-{{ l.direction }}">{{ l.direction|upper }}</span></td>
+          <td>{{ l.officer or 'System' }}</td>
+          <td>{{ l.logged_at[5:16] }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="empty-row">No logs yet</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

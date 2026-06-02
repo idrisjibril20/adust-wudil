@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - ADUST Wudil{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Good day, {{ session.full_name.split()[0] }} &#128075;</h1>
+    <p class="page-sub">{{ session.role|capitalize }} &middot; {{ session.campus_id }}</p>
+  </div>
+  <div class="header-actions">
+    {% if session.role in ['student','staff'] %}
+    <a href="{{ url_for('register_vehicle') }}" class="btn btn-primary">+ Register Vehicle</a>
+    {% endif %}
+    {% if session.role in ['admin','staff'] %}
+    <a href="{{ url_for('tasks') }}" class="btn btn-outline">+ New Task</a>
+    {% endif %}
+  </div>
+</div>
+<div class="stats-grid">
+  {% for key, val in stats.items() %}
+  <div class="stat-card">
+    <div class="stat-val">{{ val }}</div>
+    <div class="stat-label">{{ key }}</div>
+  </div>
+  {% endfor %}
+</div>
+<div class="dash-grid">
+  <div class="card">
+    <div class="card-header">
+      <h3>Recent Vehicles</h3>
+      <a href="{{ url_for('vehicles') }}" class="card-link">View all</a>
+    </div>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Plate</th><th>Owner</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>
+        {% for v in recent_vehicles %}
+        <tr>
+          <td><strong>{{ v.plate_number }}</strong></td>
+          <td>{{ v.full_name }}</td>
+          <td><span class="badge badge-{{ v.status }}">{{ v.status|capitalize }}</span></td>
+          <td>{{ v.submitted_at[:10] }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="empty-row">No vehicles yet</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <h3>Recent Tasks</h3>
+      <a href="{{ url_for('tasks') }}" class="card-link">View all</a>
+    </div>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Task</th><th>Priority</th><th>Status</th></tr></thead>
+        <tbody>
+        {% for t in recent_tasks %}
+        <tr onclick="location.href='{{ url_for('task_detail', tid=t.id) }}'" style="cursor:pointer">
+          <td><strong>{{ t.title }}</strong><br><small>{{ t.creator }}</small></td>
+          <td><span class="badge badge-pri-{{ t.priority }}">{{ t.priority|capitalize }}</span></td>
+          <td><span class="badge badge-{{ t.status }}">{{ t.status.replace('_',' ')|capitalize }}</span></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3" class="empty-row">No tasks yet</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

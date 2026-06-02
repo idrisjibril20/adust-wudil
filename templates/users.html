@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Users - ADUST Wudil{% endblock %}
+{% block page_title %}User Management{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">All Users</h1>
+    <p class="page-sub">Manage campus system accounts</p>
+  </div>
+  <a href="{{ url_for('register') }}" class="btn btn-primary">+ Add User</a>
+</div>
+<div class="card">
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>#</th><th>Name</th><th>Email</th><th>Campus ID</th><th>Role</th><th>Phone</th><th>Joined</th></tr>
+      </thead>
+      <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ u.id }}</td>
+        <td><div style="display:flex;align-items:center;gap:8px"><div class="user-avatar sm">{{ u.full_name[0] }}</div> {{ u.full_name }}</div></td>
+        <td>{{ u.email }}</td>
+        <td><code>{{ u.campus_id or 'None' }}</code></td>
+        <td><span class="badge role-badge-{{ u.role }}">{{ u.role|capitalize }}</span></td>
+        <td>{{ u.phone or 'None' }}</td>
+        <td>{{ u.created_at[:10] }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

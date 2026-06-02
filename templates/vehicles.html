@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Vehicles - ADUST Wudil{% endblock %}
+{% block page_title %}Vehicle Registry{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Vehicle Registry</h1>
+    <p class="page-sub">Manage campus vehicle registrations and permits</p>
+  </div>
+  {% if session.role != 'security' %}
+  <a href="{{ url_for('register_vehicle') }}" class="btn btn-primary">+ Register Vehicle</a>
+  {% endif %}
+</div>
+<div class="card">
+  <div class="card-header">
+    <div class="filter-bar">
+      <input type="text" id="searchInput" placeholder="Search plate, owner..." onkeyup="filterTable()" class="search-input">
+      <select id="statusFilter" onchange="filterTable()" class="filter-select">
+        <option value="">All Status</option>
+        <option value="pending">Pending</option>
+        <option value="approved">Approved</option>
+        <option value="rejected">Rejected</option>
+      </select>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table class="table" id="vehicleTable">
+      <thead>
+        <tr>
+          <th>Plate Number</th><th>Vehicle</th><th>Owner</th><th>Campus ID</th>
+          <th>Status</th><th>Sticker Code</th><th>Submitted</th>
+          {% if session.role == 'admin' %}<th>Actions</th>{% endif %}
+        </tr>
+      </thead>
+      <tbody>
+      {% for v in vehicles %}
+      <tr>
+        <td><strong>{{ v.plate_number }}</strong></td>
+        <td>{{ v.year or '' }} {{ v.make }} {{ v.model }}<br><small style="color:#888">{{ v.color }}</small></td>
+        <td>{{ v.full_name }}</td>
+        <td><code>{{ v.campus_id }}</code></td>
+        <td><span class="badge badge-{{ v.status }}">{{ v.status|capitalize }}</span></td>
+        <td>{% if v.sticker_code %}<code class="sticker">{{ v.sticker_code }}</code>{% else %}<span style="color:#aaa">None</span>{% endif %}</td>
+        <td>{{ v.submitted_at[:10] }}</td>
+        {% if session.role == 'admin' %}
+        <td>
+          {% if v.status == 'pending' %}
+          <form method="POST" action="{{ url_for('approve_vehicle', vid=v.id) }}" style="display:inline">
+            <button class="btn-sm btn-success">Approve</button>
+          </form>
+          <form method="POST" action="{{ url_for('reject_vehicle', vid=v.id) }}" style="display:inline">
+            <button class="btn-sm btn-danger">Reject</button>
+          </form>
+          {% else %}
+          <span style="color:#aaa;font-size:13px">{{ v.status|capitalize }}</span>
+          {% endif %}
+        </td>
+        {% endif %}
+      </tr>
+      {% else %}
+      <tr><td colspan="8" class="empty-row">No vehicles found</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

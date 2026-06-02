@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}{{ task.title }} - ADUST{% endblock %}
+{% block page_title %}Task Detail{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <a href="{{ url_for('tasks') }}" class="back-link">&larr; Back to Tasks</a>
+    <h1 class="page-title">{{ task.title }}</h1>
+    <p class="page-sub">Created by {{ task.creator }} on {{ task.created_at[:10] }}</p>
+  </div>
+</div>
+<div class="dash-grid">
+  <div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-header"><h3>Task Details</h3></div>
+      <div style="padding:16px 20px">
+        <p style="color:#3a5244;font-size:14px;line-height:1.6">{{ task.description or 'No description provided.' }}</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
+          <div><span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#6b8577;display:block;margin-bottom:4px">Status</span><span class="badge badge-{{ task.status }}">{{ task.status.replace('_',' ')|capitalize }}</span></div>
+          <div><span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#6b8577;display:block;margin-bottom:4px">Priority</span><span class="badge badge-pri-{{ task.priority }}">{{ task.priority|capitalize }}</span></div>
+          <div><span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#6b8577;display:block;margin-bottom:4px">Assigned to</span><span>{{ task.assignee or 'Unassigned' }}</span></div>
+          <div><span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#6b8577;display:block;margin-bottom:4px">Due date</span><span>{{ task.due_date or 'None' }}</span></div>
+        </div>
+      </div>
+      <div style="padding:12px 20px;border-top:1px solid #d0e4d8;display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#f5faf7">
+        <span style="font-size:13px;color:#888">Update status:</span>
+        {% for s in [('open','Open'),('in_progress','In Progress'),('closed','Closed')] %}
+        <form method="POST" action="{{ url_for('update_task_status', tid=task.id) }}" style="display:inline">
+          <input type="hidden" name="status" value="{{ s[0] }}">
+          <button class="btn-sm {% if task.status==s[0] %}btn-active{% else %}btn-outline-sm{% endif %}">{{ s[1] }}</button>
+        </form>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Comments ({{ comments|length }})</h3></div>
+      <div style="padding:12px 16px;display:flex;flex-direction:column;gap:14px">
+        {% for c in comments %}
+        <div style="display:flex;gap:12px">
+          <div style="width:32px;height:32px;border-radius:50%;background:#1a9e55;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0">{{ c.full_name[0] }}</div>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#0f1f18">{{ c.full_name }} <span style="color:#6b8577;font-weight:400;font-size:12px">{{ c.created_at[5:16] }}</span></div>
+            <div style="font-size:14px;color:#3a5244;margin-top:4px">{{ c.body }}</div>
+          </div>
+        </div>
+        {% else %}
+        <div class="empty-row">No comments yet.</div>
+        {% endfor %}
+      </div>
+      <form method="POST" action="{{ url_for('add_comment', tid=task.id) }}" style="padding:12px 16px;border-top:1px solid #d0e4d8;display:flex;flex-direction:column;gap:10px">
+        <textarea name="body" required placeholder="Write a comment..." rows="2" style="padding:10px;border:1px solid #d0e4d8;border-radius:8px;resize:none;font-size:13px;outline:none;width:100%;font-family:inherit"></textarea>
+        <button type="submit" class="btn-primary" style="align-self:flex-start">Post Comment</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

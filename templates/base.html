@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}ADUST Wudil{% endblock %}</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+{% if session.user_id %}
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-badge">AD</div>
+    <div>
+      <div class="logo-name">ADUST</div>
+      <div class="logo-sub">Wudil Campus</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="{{ url_for('dashboard') }}" class="nav-item {% if request.endpoint=='dashboard' %}active{% endif %}">
+      <span class="nav-icon">&#9635;</span> Dashboard
+    </a>
+    <a href="{{ url_for('vehicles') }}" class="nav-item {% if 'vehicle' in request.endpoint %}active{% endif %}">
+      <span class="nav-icon">&#128663;</span> Vehicles
+    </a>
+    {% if session.role in ['admin','security'] %}
+    <a href="{{ url_for('gate') }}" class="nav-item {% if request.endpoint=='gate' %}active{% endif %}">
+      <span class="nav-icon">&#128737;</span> Gate Control
+    </a>
+    {% endif %}
+    <a href="{{ url_for('tasks') }}" class="nav-item {% if 'task' in request.endpoint %}active{% endif %}">
+      <span class="nav-icon">&#9989;</span> Tasks
+    </a>
+    {% if session.role == 'admin' %}
+    <a href="{{ url_for('users') }}" class="nav-item {% if request.endpoint=='users' %}active{% endif %}">
+      <span class="nav-icon">&#128101;</span> Users
+    </a>
+    {% endif %}
+  </nav>
+  <div class="sidebar-user">
+    <div class="user-avatar">{{ session.full_name[0] }}</div>
+    <div class="user-info">
+      <div class="user-name">{{ session.full_name }}</div>
+      <div class="user-role role-{{ session.role }}">{{ session.role|capitalize }}</div>
+    </div>
+    <a href="{{ url_for('logout') }}" class="logout-btn" title="Logout">&#9211;</a>
+  </div>
+</aside>
+<div class="topbar">
+  <button class="menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">&#9776;</button>
+  <div class="topbar-title">{% block page_title %}Dashboard{% endblock %}</div>
+  <div class="topbar-right">
+    <button class="notif-btn" onclick="toggleNotifs()" id="notifBtn">
+      &#128276;
+      {% if unread > 0 %}<span class="notif-badge">{{ unread }}</span>{% endif %}
+    </button>
+    <div class="notif-dropdown" id="notifDropdown">
+      <div class="notif-header">
+        <span>Notifications</span>
+        <button onclick="markAllRead()">Mark all read</button>
+      </div>
+      {% for n in notifs %}
+      <div class="notif-item {% if not n.is_read %}unread{% endif %}">
+        <div class="notif-msg">{{ n.message }}</div>
+        <div class="notif-time">{{ n.created_at[:16] }}</div>
+      </div>
+      {% else %}
+      <div class="notif-empty">No notifications</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+<main class="main-content">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+    <div class="alert alert-{{ cat }}">{{ msg }} <button onclick="this.parentElement.remove()">x</button></div>
+    {% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+{% else %}
+{% block auth_content %}{% endblock %}
+{% endif %}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
